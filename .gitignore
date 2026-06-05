@@ -1,0 +1,7 @@
+# never commit these
+backend/.env
+frontend/.env
+__pycache__/
+*.pyc
+node_modules/
+.chroma/
