@@ -6,6 +6,7 @@ import DiffViewer from "./components/DiffViewer"
 import ErrorList from "./components/ErrorList"
 
 export default function App() {
+  const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
@@ -16,11 +17,12 @@ export default function App() {
   setResult(null)
 
   try {
-    const res = await axios.post("http://127.0.0.1:8000/fix-code", {
-      code,
-      language,
-      user_context: userContext
-    })
+    // ✅ keep this
+const res = await axios.post(`${API_URL}/fix-code`, {
+  code,
+  language,
+  user_context: userContext
+})
     setResult(res.data)
   } catch (err) {
     setError("Something went wrong. Is the backend running?")
