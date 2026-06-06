@@ -17,21 +17,17 @@ export default function AuthModal({ onClose }) {
     try {
       if (mode === "login") {
         const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password
+          email, password
         })
         if (error) throw error
         onClose()
-
       } else {
         const { error } = await supabase.auth.signUp({
-          email,
-          password
+          email, password
         })
         if (error) throw error
         setMessage("✅ Check your email to confirm your account!")
       }
-
     } catch (err) {
       setError(err.message)
     } finally {
@@ -39,24 +35,65 @@ export default function AuthModal({ onClose }) {
     }
   }
 
+  const handleGoogle = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin
+      }
+    })
+  }
+
+  const handleApple = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "apple",
+      options: {
+        redirectTo: window.location.origin
+      }
+    })
+  }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center
       justify-center z-50 px-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-md">
+      <div className="bg-gray-900 border border-gray-700 rounded-xl p-6
+        w-full max-w-md">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-bold text-white">
             {mode === "login" ? "Welcome back 👋" : "Create account 🚀"}
           </h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-white">
+            ✕
+          </button>
+        </div>
+
+        {/* Social buttons */}
+        <div className="flex flex-col gap-3 mb-6">
           <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-white"
-          >✕</button>
+            onClick={handleGoogle}
+            className="w-full flex items-center justify-center gap-3 py-3
+              rounded-lg border border-gray-700 text-white text-sm
+              hover:bg-gray-800 transition font-semibold"
+          >
+            <img
+              src="https://www.google.com/favicon.ico"
+              className="w-4 h-4"
+            />
+            Continue with Google
+          </button>
+        </div>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex-1 h-px bg-gray-700"></div>
+          <span className="text-xs text-gray-500">or continue with email</span>
+          <div className="flex-1 h-px bg-gray-700"></div>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-4">
           <button
             onClick={() => setMode("login")}
             className={`flex-1 py-2 rounded-lg text-sm font-semibold transition
@@ -79,7 +116,7 @@ export default function AuthModal({ onClose }) {
           </button>
         </div>
 
-        {/* Form */}
+        {/* Email/Password form */}
         <div className="flex flex-col gap-3">
           <input
             type="email"
@@ -99,15 +136,9 @@ export default function AuthModal({ onClose }) {
           />
         </div>
 
-        {/* Error / Message */}
-        {error && (
-          <p className="text-red-400 text-sm mt-3">⚠️ {error}</p>
-        )}
-        {message && (
-          <p className="text-green-400 text-sm mt-3">{message}</p>
-        )}
+        {error && <p className="text-red-400 text-sm mt-3">⚠️ {error}</p>}
+        {message && <p className="text-green-400 text-sm mt-3">{message}</p>}
 
-        {/* Submit */}
         <button
           onClick={handleSubmit}
           disabled={loading || !email || !password}
