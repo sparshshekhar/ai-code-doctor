@@ -7,6 +7,7 @@ import DiffViewer from "./components/DiffViewer"
 import ErrorList from "./components/ErrorList"
 import FixHistory from "./components/FixHistory"
 import ShareButton from "./components/ShareButton"
+import AiChat from "./components/AiChat"
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"
 
@@ -17,7 +18,6 @@ export default function App() {
   const [user, setUser] = useState(null)
   const [showHistory, setShowHistory] = useState(false)
 
-  // check if user is logged in on load
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
@@ -42,7 +42,6 @@ export default function App() {
 
       setResult(res.data)
 
-      // save to history if logged in
       if (user) {
         await supabase.from("fix_history").insert({
           user_id: user.id,
@@ -175,7 +174,7 @@ export default function App() {
                 </div>
 
                 {/* Share button */}
-<ShareButton result={result} />
+                <ShareButton result={result} />
 
                 {/* What AI understood */}
                 {result.what_code_does && (
@@ -191,11 +190,18 @@ export default function App() {
                   </div>
                 )}
 
+                {/* Error list */}
                 <ErrorList errors={result.errors} fixes={result.fixes} />
+
+                {/* Diff viewer */}
                 <DiffViewer
                   original={result.original_code}
                   fixed={result.fixed_code}
                 />
+
+                {/* 👇 AI Chat — added here */}
+                <AiChat result={result} />
+
               </div>
             )}
           </>
