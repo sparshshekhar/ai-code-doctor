@@ -11,6 +11,26 @@ const SUGGESTIONS = [
   "How can I avoid this bug in future?",
 ]
 
+function CopyCodeButton({ code }) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="text-xs text-gray-400 hover:text-white transition px-2
+        py-0.5 rounded hover:bg-gray-600"
+    >
+      {copied ? "✅ Copied!" : "📋 Copy"}
+    </button>
+  )
+}
+
 export default function AiChat({ result }) {
   const [messages, setMessages] = useState([
     {
@@ -97,6 +117,40 @@ export default function AiChat({ result }) {
     }
   }
 
+
+  const formatMessage = (content) => {
+  const parts = content.split(/(```[\s\S]*?```)/g)
+
+  return parts.map((part, i) => {
+    if (part.startsWith("```")) {
+      // extract language and code
+      const lines = part.split("\n")
+      const lang = lines[0].replace("```", "").trim() || "code"
+      const code = lines.slice(1, -1).join("\n")
+
+      return (
+        <div key={i} className="my-2 rounded-lg overflow-hidden border
+          border-gray-600">
+          {/* Code block header */}
+          <div className="flex items-center justify-between px-3 py-1.5
+            bg-gray-700">
+            <span className="text-xs text-gray-400 font-mono">{lang}</span>
+            <CopyCodeButton code={code} />
+          </div>
+          {/* Code */}
+          <pre className="p-3 text-xs overflow-x-auto bg-gray-900
+            text-gray-200 whitespace-pre-wrap">
+            {code}
+          </pre>
+        </div>
+      )
+    }
+
+    // regular text
+    return <span key={i} className="whitespace-pre-wrap">{part}</span>
+  })
+}
+
   return (
     <div className="flex flex-col gap-3">
       <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest">
@@ -122,16 +176,17 @@ export default function AiChat({ result }) {
             </div>
 
             {/* Message bubble */}
-            <div className={`max-w-[80%] rounded-xl px-4 py-2.5 text-sm
-              whitespace-pre-wrap ${msg.role === "assistant"
-                ? "bg-gray-800 text-gray-200"
-                : "bg-violet-700 text-white"
-              }`}
-            >
-              {msg.content || (
-                <span className="text-gray-500 animate-pulse">thinking...</span>
-              )}
-            </div>
+<div className={`max-w-[80%] rounded-xl px-4 py-2.5 text-sm
+  ${msg.role === "assistant"
+    ? "bg-gray-800 text-gray-200"
+    : "bg-violet-700 text-white"
+  }`}
+>
+  {msg.content
+    ? formatMessage(msg.content)
+    : <span className="text-gray-500 animate-pulse">thinking...</span>
+  }
+</div>
           </div>
         ))}
         <div ref={bottomRef} />
