@@ -6,6 +6,7 @@ import CodeInput from "./components/CodeInput"
 import DiffViewer from "./components/DiffViewer"
 import ErrorList from "./components/ErrorList"
 import FixHistory from "./components/FixHistory"
+import ShareButton from "./components/ShareButton"
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"
 
@@ -172,6 +173,9 @@ export default function App() {
                     </div>
                   )}
                 </div>
+
+                {/* Share button */}
+<ShareButton result={result} />
 
                 {/* What AI understood */}
                 {result.what_code_does && (

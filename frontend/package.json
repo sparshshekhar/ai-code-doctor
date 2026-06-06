@@ -14,9 +14,11 @@
     "@supabase/supabase-js": "^2.107.0",
     "@tailwindcss/vite": "^4.3.0",
     "axios": "^1.17.0",
+    "nanoid": "^5.1.11",
     "react": "^19.2.6",
     "react-diff-viewer-continued": "^4.2.2",
     "react-dom": "^19.2.6",
+    "react-router-dom": "^7.17.0",
     "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
